@@ -24,11 +24,23 @@ A modular-monolith MES with separate integration services (SAP; real ServiceNow 
   rejected a posting) get a root-cause analysis from service logs (Loki), SAP message history, MES-vs-SAP order data,
   failed events and service health; fixes are proposed for human approval; code defects go to L3 with a Jira-ready
   handover. People can take any ticket over from the AI. All services log structured JSON with request ids.
-- **Phase 7** (current): **alerts and support analytics**. A notifier alerts the on-call rota (e-mail, Teams, in-app
+- **Phase 7**: **alerts and support analytics**. A notifier alerts the on-call rota (e-mail, Teams, in-app
   bell) on P1s, SLA at risk / missed, escalations, AI proposals waiting for approval, AI handovers and a paused agent;
   unacknowledged alerts move to the backup, then the supervisor. A **Support analytics** dashboard (SLA, speed,
   recurring problems, AI contribution and cost, supervisor ratings) and an **evaluation set** that scores the AI
   agents on 12 realistic scenarios.
+- **Since Phase 7** (current): a redesigned admin UI (persistent sidebar, live-data connections for the AI agents,
+  a knowledge base of runbooks/machine guides/uploads), an **engineer chat** in the AI Support Assistant that answers
+  questions with interactive cards and makes changes only through an explicit confirm step, ticket **forecasting**
+  and an **SLA breach/exit report**, assignees synced to ServiceNow, and eight weeks of seedable demo ticket history.
+  Phase 8 (per-action permission hardening, prompt-injection defence, OAuth, deployment) is scoped but not started.
+
+## Screenshots
+
+| | |
+|---|---|
+| ![Home](docs/screenshots/home.png) | ![Work orders](docs/screenshots/work-orders.png) |
+| ![Support tickets](docs/screenshots/tickets.png) | ![AI Support Assistant](docs/screenshots/ai-assistant.png) |
 
 ## Quick start
 
@@ -298,12 +310,13 @@ npm run dev:terminal                                                  # terminal
 Tests:
 
 ```bash
-cd services/core && uv run pytest            # 51 tests, testcontainers Postgres + Redis (needs Docker)
+cd services/core && uv run pytest            # 58 tests, testcontainers Postgres + Redis (needs Docker)
 cd services/erp-adapter && uv run pytest     # 12 tests against a live mock SAP over HTTP
-cd services/itsm-adapter && uv run pytest    # 6 tests: REST connectors (API fakes) and MCP mode (headless mocks)
+cd services/itsm-adapter && uv run pytest    # 13 tests: REST connectors (API fakes) and MCP mode (headless mocks)
 cd services/mes-mcp && uv run pytest         # MES MCP server
-cd services/support-agent && uv run pytest   # 17 tests: scripted model + fake MES API (no Claude calls, no cost)
-cd services/notifier && uv run pytest        # 5 tests: alerts, escalation, auto-close, API, real SMTP delivery
+cd services/support-agent && uv run pytest   # 31 tests: scripted model + fake MES API, engineer chat, MCP client, knowledge store (no Claude calls, no cost)
+cd services/data-mcp && uv run pytest        # 13 tests: read-only MES/SAP MCP servers
+cd services/notifier && uv run pytest        # 6 tests: alerts, escalation, auto-close, API, real SMTP delivery
 cd frontend/apps/admin && npx playwright test   # admin + terminal UI tests against the running stack
 uv run python scripts/smoke_test.py          # end-to-end incl. timeout reconciliation (ITSM part if connected)
 ```
