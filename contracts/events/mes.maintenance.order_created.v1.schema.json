@@ -1,0 +1,81 @@
+{
+  "properties": {
+    "order_id": {
+      "format": "uuid",
+      "title": "Order Id",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "order_type": {
+      "title": "Order Type",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "equipment": {
+      "title": "Equipment",
+      "type": "string"
+    },
+    "work_center": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Work Center"
+    },
+    "notification_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notification Number"
+    },
+    "priority": {
+      "title": "Priority",
+      "type": "string"
+    },
+    "planned_start": {
+      "format": "date-time",
+      "title": "Planned Start",
+      "type": "string"
+    },
+    "duration_min": {
+      "title": "Duration Min",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "order_id",
+    "erp_plant",
+    "number",
+    "order_type",
+    "description",
+    "equipment",
+    "priority",
+    "planned_start",
+    "duration_min"
+  ],
+  "title": "MaintOrderCommand",
+  "type": "object",
+  "$id": "urn:mes:events:mes.maintenance.order_created.v1",
+  "description": "core -> erp-adapter: SAP PM order (topic mes.maintenance.v1, payload of the envelope)"
+}

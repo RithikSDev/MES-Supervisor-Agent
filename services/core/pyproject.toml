@@ -1,0 +1,68 @@
+[project]
+name = "mes-core"
+version = "0.1.0"
+description = "MES core: modular monolith (org, identity, masterdata, planning, execution, compliance, erp_sync)."
+requires-python = ">=3.14"
+dependencies = [
+    "mes-common",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic-settings>=2.6",
+    "alembic>=1.14",
+    "tzdata>=2024.2",
+    "redis>=5.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mes_core"]
+
+# Module boundaries. Run with: uv run lint-imports (from services/core)
+[tool.importlinter]
+root_package = "mes_core"
+include_external_packages = true
+
+[[tool.importlinter.contracts]]
+name = "Modules talk to each other only through their public.py"
+type = "independence"
+modules = [
+    "mes_core.modules.org",
+    "mes_core.modules.identity",
+    "mes_core.modules.masterdata",
+    "mes_core.modules.planning",
+    "mes_core.modules.execution",
+    "mes_core.modules.inventory",
+    "mes_core.modules.quality",
+    "mes_core.modules.genealogy",
+    "mes_core.modules.maintenance",
+    "mes_core.modules.ticketing",
+    "mes_core.modules.compliance",
+    "mes_core.modules.erp_sync",
+]
+ignore_imports = [
+    "mes_core.modules.** -> mes_core.modules.*.public",
+    # web/deps.py is the composition root (auth -> identity provisioning); not a module-to-module dependency
+    "mes_core.web.deps -> mes_core.modules.identity.public",
+]
+
+[[tool.importlinter.contracts]]
+name = "Domain code is framework-free"
+type = "forbidden"
+source_modules = [
+    "mes_core.modules.planning.domain",
+    "mes_core.modules.execution.domain",
+    "mes_core.modules.quality.domain",
+    "mes_core.modules.maintenance.domain",
+    "mes_core.modules.ticketing.domain",
+    "mes_core.shared.calendar",
+]
+forbidden_modules = ["fastapi", "sqlalchemy", "mes_core.shared.db"]
+
+[[tool.importlinter.contracts]]
+name = "Shared kernel does not depend on modules"
+type = "forbidden"
+source_modules = ["mes_core.shared"]
+forbidden_modules = ["mes_core.modules"]

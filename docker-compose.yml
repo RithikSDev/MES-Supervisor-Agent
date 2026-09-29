@@ -1,0 +1,424 @@
+# MES demo stack. `docker compose up -d --build`, then open http://localhost:3080 (users: admin1/supervisor1/... password "demo")
+# and the operator terminal at http://localhost:3081 (enrol it from the admin UI: Terminals; demo PINs 1111/2222/3333/4444).
+# All credentials below are demo defaults; override them via a .env file.
+
+x-python-env: &python-env
+  LOG_LEVEL: ${LOG_LEVEL:-INFO}
+  KAFKA_BOOTSTRAP: redpanda:9092
+  OIDC_ISSUER: http://localhost:8080/realms/mes
+  OIDC_JWKS_URL: http://keycloak:8080/realms/mes/protocol/openid-connect/certs
+  OIDC_AUDIENCE: mes-api
+
+x-core-env: &core-env
+  REDIS_URL: redis://redis:6379/0
+  TERMINAL_JWT_SECRET: ${TERMINAL_JWT_SECRET:-dev-only-terminal-jwt-secret-change-me-0123456789}
+  TERMINAL_PIN_PEPPER: ${TERMINAL_PIN_PEPPER:-dev-only-pin-pepper-change-me}
+
+x-http-health: &http-health
+  interval: 5s
+  timeout: 3s
+  retries: 30
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg17
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      MES_OWNER_PASSWORD: ${MES_OWNER_PASSWORD:-mes_owner}
+      MES_APP_PASSWORD: ${MES_APP_PASSWORD:-mes_app}
+      INTEG_PASSWORD: ${INTEG_PASSWORD:-integ}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+    ports: ["${POSTGRES_HOST_PORT:-5433}:5432"]  # 5433 avoids clashing with a locally installed PostgreSQL
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./infra/postgres/init/10-mes.sh:/docker-entrypoint-initdb.d/10-mes.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d mes_core"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+
+  redpanda:
+    image: docker.redpanda.com/redpandadata/redpanda:latest
+    command:
+      - redpanda start
+      - --mode dev-container
+      - --smp 1
+      - --memory 512M
+      - --kafka-addr internal://0.0.0.0:9092,external://0.0.0.0:19092
+      - --advertise-kafka-addr internal://redpanda:9092,external://localhost:19092
+      - --rpc-addr redpanda:33145
+      - --advertise-rpc-addr redpanda:33145
+    ports: ["19092:19092"]
+    volumes: [redpanda:/var/lib/redpanda/data]
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  redis:
+    image: redis:7.4-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no"]  # live-view cache only; the DB is the truth
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redpanda-console:
+    image: docker.redpanda.com/redpandadata/console:latest
+    environment:
+      KAFKA_BROKERS: redpanda:9092
+    ports: ["8081:8080"]
+    depends_on:
+      redpanda: { condition: service_healthy }
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.3
+    command: ["start-dev", "--import-realm"]
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak}
+      # Tokens always carry the public issuer, even when services talk to keycloak:8080 internally.
+      KC_HOSTNAME: http://localhost:8080
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HEALTH_ENABLED: "true"
+    ports: ["8080:8080"]
+    volumes:
+      - ./infra/keycloak/realm-mes.json:/opt/keycloak/data/import/realm-mes.json:ro
+    depends_on:
+      postgres: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && grep -q UP <&3"]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+  mock-sap:
+    build: { context: ., dockerfile: services/mock-sap/Dockerfile }
+    environment:
+      MOCK_SAP_STATE_FILE: /data/mock-sap.json
+      MOCK_SAP_SEED_ORDERS: ${MOCK_SAP_SEED_ORDERS:-40}
+    ports: ["8030:8000"]
+    volumes: [mocksap:/data]
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/_mock/health')"]
+
+  core-migrate:
+    build: { context: ., dockerfile: services/core/Dockerfile }
+    command: ["sh", "-c", "alembic upgrade head && python -m mes_core.seed"]
+    environment:
+      MIGRATION_DATABASE_URL: postgresql+asyncpg://mes_owner:${MES_OWNER_PASSWORD:-mes_owner}@postgres:5432/mes_core
+      SEED_PLANT_TIMEZONE: ${PLANT_TIMEZONE:-Asia/Kolkata}
+      TERMINAL_PIN_PEPPER: ${TERMINAL_PIN_PEPPER:-dev-only-pin-pepper-change-me}
+    depends_on:
+      postgres: { condition: service_healthy }
+
+  core-api:
+    build: { context: ., dockerfile: services/core/Dockerfile }
+    environment:
+      <<: [*python-env, *core-env]
+      DATABASE_URL: postgresql+asyncpg://mes_app:${MES_APP_PASSWORD:-mes_app}@postgres:5432/mes_core
+      # demo installation: admins may empty all data from the UI (account menu -> Reset demo data)
+      ALLOW_DATA_RESET: ${ALLOW_DATA_RESET:-true}
+      RESET_DATABASE_URL: postgresql+asyncpg://mes_owner:${MES_OWNER_PASSWORD:-mes_owner}@postgres:5432/mes_core
+      SEED_PLANT_TIMEZONE: ${PLANT_TIMEZONE:-Asia/Kolkata}
+    ports: ["${CORE_API_PORT:-8000}:8000"]
+    depends_on:
+      core-migrate: { condition: service_completed_successfully }
+      keycloak: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+
+  core-worker:
+    build: { context: ., dockerfile: services/core/Dockerfile }
+    command: ["python", "-m", "mes_core.worker"]
+    restart: unless-stopped
+    environment:
+      <<: [*python-env, *core-env]
+      DATABASE_URL: postgresql+asyncpg://mes_app:${MES_APP_PASSWORD:-mes_app}@postgres:5432/mes_core
+    depends_on:
+      core-migrate: { condition: service_completed_successfully }
+      redpanda: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  erp-adapter-api:
+    build: { context: ., dockerfile: services/erp-adapter/Dockerfile }
+    environment:
+      <<: *python-env
+      DATABASE_URL: postgresql+asyncpg://integ:${INTEG_PASSWORD:-integ}@postgres:5432/mes_integration
+      SAP_BASE_URL: http://mock-sap:8000
+      ALLOW_DATA_RESET: ${ALLOW_DATA_RESET:-true}
+    ports: ["8020:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+      mock-sap: { condition: service_healthy }
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+
+  erp-adapter-worker:
+    build: { context: ., dockerfile: services/erp-adapter/Dockerfile }
+    command: ["python", "-m", "erp_adapter.worker"]
+    restart: unless-stopped
+    environment:
+      <<: *python-env
+      DATABASE_URL: postgresql+asyncpg://integ:${INTEG_PASSWORD:-integ}@postgres:5432/mes_integration
+      SAP_BASE_URL: http://mock-sap:8000
+      POLL_INTERVAL_S: ${ERP_POLL_INTERVAL_S:-10}
+    depends_on:
+      erp-adapter-api: { condition: service_healthy }   # its startup runs the migrations
+      redpanda: { condition: service_healthy }
+      # core must be migrated before the first work orders arrive, or they'd sit in the topic (harmless) until it is
+      core-migrate: { condition: service_completed_successfully }
+
+  # --- ITSM (phase 4): the itsm-adapter connects to a real ServiceNow instance (Table API) and Jira Cloud (REST v3).
+  # Credentials come from the git-ignored .env next to this file (see .env.example); unset = not connected (tickets
+  # stay in MES and are sent once it is configured). ITSM_MODE=mcp talks to MCP servers instead.
+  itsm-adapter-api:
+    build: { context: ., dockerfile: services/itsm-adapter/Dockerfile }
+    environment: &itsm-env
+      <<: *python-env
+      DATABASE_URL: postgresql+asyncpg://integ:${INTEG_PASSWORD:-integ}@postgres:5432/mes_integration
+      ITSM_MODE: ${ITSM_MODE:-rest}
+      ALLOW_DATA_RESET: ${ALLOW_DATA_RESET:-true}
+      # connections are set up in the admin UI; their secrets are encrypted with this key (python -m itsm_adapter.keygen)
+      ITSM_SECRET_KEY: ${ITSM_SECRET_KEY:-}
+      ITSM_ALLOW_ANY_HOST: ${ITSM_ALLOW_ANY_HOST:-false}
+      # older setups only: imported once into the database when no connection is stored yet
+      SERVICENOW_INSTANCE_URL: ${SERVICENOW_INSTANCE_URL:-}
+      SERVICENOW_USER: ${SERVICENOW_USER:-}
+      SERVICENOW_PASSWORD: ${SERVICENOW_PASSWORD:-}
+      SERVICENOW_CLOSE_CODE: ${SERVICENOW_CLOSE_CODE:-Solution provided}
+      SERVICENOW_CONTACT_TYPE: ${SERVICENOW_CONTACT_TYPE:-}
+      JIRA_SITE_URL: ${JIRA_SITE_URL:-}
+      JIRA_EMAIL: ${JIRA_EMAIL:-}
+      JIRA_API_TOKEN: ${JIRA_API_TOKEN:-}
+      JIRA_PROJECT: ${JIRA_PROJECT:-MES}
+      JIRA_ISSUE_TYPE_BUG: ${JIRA_ISSUE_TYPE_BUG:-Bug}
+      JIRA_ISSUE_TYPE_TASK: ${JIRA_ISSUE_TYPE_TASK:-Task}
+      GROUP_L1: ${GROUP_L1:-MES L1 Operations}
+      GROUP_L2: ${GROUP_L2:-MES L2 App & DB Engineering}
+      GROUP_L3: ${GROUP_L3:-MES L3 Core Dev}
+      SERVICENOW_MCP_URL: ${SERVICENOW_MCP_URL:-}
+      SERVICENOW_MCP_KEY: ${SERVICENOW_MCP_KEY:-}
+      JIRA_MCP_URL: ${JIRA_MCP_URL:-}
+      JIRA_MCP_KEY: ${JIRA_MCP_KEY:-}
+      MES_UI_URL: http://localhost:3080
+    ports: ["8070:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+      erp-adapter-api: { condition: service_healthy }  # one migration at a time in the shared integration database
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+
+  itsm-adapter-worker:
+    build: { context: ., dockerfile: services/itsm-adapter/Dockerfile }
+    command: ["python", "-m", "itsm_adapter.worker"]
+    restart: unless-stopped
+    environment:
+      <<: *itsm-env
+      POLL_INTERVAL_S: ${ITSM_POLL_INTERVAL_S:-15}
+    depends_on:
+      itsm-adapter-api: { condition: service_healthy }
+      redpanda: { condition: service_healthy }
+
+  # --- logs (phase 6): every container's stdout -> Alloy -> Loki; Grafana (:3090) to browse them. The AI L2 agent
+  # searches Loki too.
+  loki:
+    image: grafana/loki:3.5.3
+    command: ["-config.file=/etc/loki/loki.yaml"]
+    volumes:
+      - ./infra/loki/loki.yaml:/etc/loki/loki.yaml:ro
+      - loki:/loki
+    ports: ["3100:3100"]
+    healthcheck:
+      <<: *http-health
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3100/ready | grep -q ready"]
+
+  alloy:
+    image: grafana/alloy:v1.10.2
+    command: ["run", "--server.http.listen-addr=0.0.0.0:12345", "--storage.path=/var/lib/alloy/data", "/etc/alloy/config.alloy"]
+    volumes:
+      - ./infra/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      loki: { condition: service_healthy }
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    ports: ["3090:3000"]
+    depends_on:
+      loki: { condition: service_healthy }
+
+  # --- AI support agent (phase 5): L1 ticket work and the operator chat on Claude. ANTHROPIC_API_KEY comes from the
+  # git-ignored .env; without it the agent stays idle and tickets go to humans as before.
+  support-agent-api:
+    build: { context: ., dockerfile: services/support-agent/Dockerfile }
+    environment: &agent-env
+      <<: *python-env
+      DATABASE_URL: postgresql+asyncpg://integ:${INTEG_PASSWORD:-integ}@postgres:5432/mes_integration
+      CORE_API_URL: http://core-api:8000/api/v1
+      ERP_API_URL: http://erp-adapter-api:8000/api/v1
+      ITSM_API_URL: http://itsm-adapter-api:8000/api/v1
+      TOKEN_URL: http://keycloak:8080/realms/mes/protocol/openid-connect/token
+      CLIENT_ID: mes-support-agent
+      CLIENT_SECRET: ${SUPPORT_AGENT_CLIENT_SECRET:-mes-support-agent-secret}
+      MES_UI_URL: http://localhost:3080
+      LOKI_URL: http://loki:3100
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ALLOW_DATA_RESET: ${ALLOW_DATA_RESET:-true}
+      # MCP servers (live data) are registered in the UI; their tokens are encrypted with the same key as ITSM's
+      AGENT_SECRET_KEY: ${ITSM_SECRET_KEY:-}
+      DEFAULT_MES_DB_MCP_URL: http://data-mcp:8000/mes/mcp
+      DEFAULT_MES_DB_MCP_KEY: ${MES_DB_MCP_KEY:-mes-db-mcp-demo-key}
+      DEFAULT_SAP_MCP_URL: http://data-mcp:8000/sap/mcp
+      DEFAULT_SAP_MCP_KEY: ${SAP_MCP_KEY:-sap-mcp-demo-key}
+      AGENT_MODEL: ${AGENT_MODEL:-claude-opus-5}
+      EFFORT_TICKET: ${AGENT_EFFORT_TICKET:-high}
+      EFFORT_CHAT: ${AGENT_EFFORT_CHAT:-medium}
+    ports: ["8090:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+      core-api: { condition: service_healthy }
+      itsm-adapter-api: { condition: service_healthy }  # one migration at a time in the shared integration database
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+
+  support-agent-worker:
+    build: { context: ., dockerfile: services/support-agent/Dockerfile }
+    command: ["python", "-m", "support_agent.worker"]
+    restart: unless-stopped
+    environment:
+      <<: *agent-env
+    depends_on:
+      support-agent-api: { condition: service_healthy }
+      redpanda: { condition: service_healthy }
+
+  # --- alerts (phase 7): SLA at risk / breached, P1, escalations, AI approvals and handovers -> on-call rota by
+  # e-mail (Mailpit catches the demo mail: http://localhost:8025), Teams (TEAMS_WEBHOOK_URL) and the admin UI bell.
+  mailpit:
+    image: axllent/mailpit:v1.27
+    ports: ["8025:8025", "1025:1025"]
+
+  notifier-api:
+    build: { context: ., dockerfile: services/notifier/Dockerfile }
+    environment: &notifier-env
+      <<: *python-env
+      DATABASE_URL: postgresql+asyncpg://integ:${INTEG_PASSWORD:-integ}@postgres:5432/mes_integration
+      MES_UI_URL: http://localhost:3080
+      ALLOW_DATA_RESET: ${ALLOW_DATA_RESET:-true}
+      MAILPIT_API_URL: http://mailpit:8025
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      SMTP_FROM: ${SMTP_FROM:-MES Support <mes-support@plant.local>}
+      TEAMS_WEBHOOK_URL: ${TEAMS_WEBHOOK_URL:-}
+    ports: ["8095:8000"]
+    depends_on:
+      postgres: { condition: service_healthy }
+      keycloak: { condition: service_healthy }
+      support-agent-api: { condition: service_healthy }  # one migration at a time in the shared integration database
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health/ready')"]
+
+  notifier-worker:
+    build: { context: ., dockerfile: services/notifier/Dockerfile }
+    command: ["python", "-m", "notifier.worker"]
+    restart: unless-stopped
+    environment:
+      <<: *notifier-env
+    depends_on:
+      notifier-api: { condition: service_healthy }
+      redpanda: { condition: service_healthy }
+      mailpit: { condition: service_started }
+
+  # MES as an MCP server for AI agents (Claude, the phase 7 assistant): acts as the Keycloak service account mes-mcp
+  mes-mcp:
+    build: { context: ., dockerfile: services/mes-mcp/Dockerfile }
+    environment:
+      CORE_API_URL: http://core-api:8000/api/v1
+      TOKEN_URL: http://keycloak:8080/realms/mes/protocol/openid-connect/token
+      CLIENT_ID: mes-mcp
+      CLIENT_SECRET: ${MES_MCP_CLIENT_SECRET:-mes-mcp-secret}
+      MCP_API_KEY: ${MES_MCP_KEY:-mes-mcp-demo-key}
+    ports: ["8040:8000"]
+    depends_on:
+      core-api: { condition: service_healthy }
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+
+  # --- AI data access: read-only MCP servers for the AI support assistant (MES database, SAP OData APIs)
+  db-readonly:  # (re)applies the read-only role and its grants after the migrations; idempotent
+    image: timescale/timescaledb:latest-pg17
+    command: ["psql", "-v", "ON_ERROR_STOP=1", "-h", "postgres", "-U", "postgres", "-d", "mes_core",
+              "-v", "ro_password=${MES_READONLY_PASSWORD:-mes_readonly}", "-f", "/readonly.sql"]
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - ./infra/postgres/readonly.sql:/readonly.sql:ro
+    depends_on:
+      core-migrate: { condition: service_completed_successfully }
+
+  data-mcp:
+    build: { context: ., dockerfile: services/data-mcp/Dockerfile }
+    environment:
+      MES_DB_URL: postgresql://mes_readonly:${MES_READONLY_PASSWORD:-mes_readonly}@postgres:5432/mes_core
+      SAP_BASE_URL: ${SAP_BASE_URL:-http://mock-sap:8000}
+      SAP_USER: ${SAP_USER:-MES_INTEG}
+      SAP_PASSWORD: ${SAP_PASSWORD:-mes-integ-secret}
+      MES_DB_MCP_KEY: ${MES_DB_MCP_KEY:-mes-db-mcp-demo-key}
+      SAP_MCP_KEY: ${SAP_MCP_KEY:-sap-mcp-demo-key}
+    ports: ["8045:8000"]
+    depends_on:
+      db-readonly: { condition: service_completed_successfully }
+      mock-sap: { condition: service_healthy }
+    healthcheck:
+      <<: *http-health
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+
+  admin-ui:
+    build: { context: ./frontend, dockerfile: apps/admin/Dockerfile }
+    ports: ["${ADMIN_UI_PORT:-3080}:80"]
+    depends_on:
+      core-api: { condition: service_healthy }
+      erp-adapter-api: { condition: service_healthy }
+      itsm-adapter-api: { condition: service_healthy }
+      support-agent-api: { condition: service_healthy }
+      notifier-api: { condition: service_healthy }
+
+  terminal-ui:
+    build: { context: ./frontend, dockerfile: apps/terminal/Dockerfile }
+    ports: ["${TERMINAL_UI_PORT:-3081}:80"]
+    depends_on:
+      core-api: { condition: service_healthy }
+      support-agent-api: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  loki:
+  redpanda:
+  mocksap:

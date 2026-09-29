@@ -1,0 +1,38 @@
+{
+  "properties": {
+    "schedule_id": {
+      "format": "uuid",
+      "title": "Schedule Id",
+      "type": "string"
+    },
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "version": {
+      "title": "Version",
+      "type": "integer"
+    },
+    "entries": {
+      "title": "Entries",
+      "type": "integer"
+    },
+    "signature_id": {
+      "format": "uuid",
+      "title": "Signature Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schedule_id",
+    "plant_id",
+    "version",
+    "entries",
+    "signature_id"
+  ],
+  "title": "SchedulePublished",
+  "type": "object",
+  "$id": "urn:mes:events:mes.schedule.published.v1",
+  "description": "core -> anyone (topic mes.planning.v1, payload of the envelope)"
+}

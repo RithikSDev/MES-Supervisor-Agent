@@ -1,0 +1,73 @@
+{
+  "properties": {
+    "run_id": {
+      "format": "uuid",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "event_type": {
+      "title": "Event Type",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "work_order_id": {
+      "format": "uuid",
+      "title": "Work Order Id",
+      "type": "string"
+    },
+    "operation_id": {
+      "format": "uuid",
+      "title": "Operation Id",
+      "type": "string"
+    },
+    "equipment_id": {
+      "format": "uuid",
+      "title": "Equipment Id",
+      "type": "string"
+    },
+    "operator_id": {
+      "format": "uuid",
+      "title": "Operator Id",
+      "type": "string"
+    },
+    "occurred_at": {
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "reason_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reason Code"
+    }
+  },
+  "required": [
+    "run_id",
+    "event_type",
+    "status",
+    "plant_id",
+    "work_order_id",
+    "operation_id",
+    "equipment_id",
+    "operator_id",
+    "occurred_at",
+    "reason_code"
+  ],
+  "title": "RunChanged",
+  "type": "object",
+  "$id": "urn:mes:events:mes.execution.run_changed.v1",
+  "description": "core -> anyone (analytics, alerts) (topic mes.execution.v1, payload of the envelope)"
+}

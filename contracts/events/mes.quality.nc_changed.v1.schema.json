@@ -1,0 +1,69 @@
+{
+  "properties": {
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "nc_id": {
+      "format": "uuid",
+      "title": "Nc Id",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "severity": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Severity"
+    },
+    "disposition": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Disposition"
+    },
+    "work_order_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Work Order Id"
+    }
+  },
+  "required": [
+    "plant_id",
+    "nc_id",
+    "number",
+    "status"
+  ],
+  "title": "NonconformanceChanged",
+  "type": "object",
+  "$id": "urn:mes:events:mes.quality.nc_changed.v1",
+  "description": "core -> anyone (alerts, analytics) (topic mes.quality.v1, payload of the envelope)"
+}

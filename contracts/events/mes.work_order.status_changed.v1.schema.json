@@ -1,0 +1,49 @@
+{
+  "properties": {
+    "work_order_id": {
+      "format": "uuid",
+      "title": "Work Order Id",
+      "type": "string"
+    },
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "erp_order_number": {
+      "title": "Erp Order Number",
+      "type": "string"
+    },
+    "from_status": {
+      "title": "From Status",
+      "type": "string"
+    },
+    "to_status": {
+      "title": "To Status",
+      "type": "string"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reason"
+    }
+  },
+  "required": [
+    "work_order_id",
+    "plant_id",
+    "erp_order_number",
+    "from_status",
+    "to_status",
+    "reason"
+  ],
+  "title": "WorkOrderStatusChanged",
+  "type": "object",
+  "$id": "urn:mes:events:mes.work_order.status_changed.v1",
+  "description": "core -> anyone (topic mes.planning.v1, payload of the envelope)"
+}

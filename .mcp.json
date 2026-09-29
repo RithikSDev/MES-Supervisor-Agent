@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "mes": {
+      "type": "http",
+      "url": "http://localhost:8040/mcp",
+      "headers": { "Authorization": "Bearer ${MES_MCP_KEY:-mes-mcp-demo-key}" }
+    }
+  }
+}

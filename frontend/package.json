@@ -1,0 +1,15 @@
+{
+  "name": "mes-frontend",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev:admin": "npm run dev -w apps/admin",
+    "dev:terminal": "npm run dev -w apps/terminal",
+    "build:admin": "npm run build -w apps/admin",
+    "build:terminal": "npm run build -w apps/terminal",
+    "gen:api": "npm run gen -w packages/api-client"
+  }
+}

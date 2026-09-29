@@ -1,0 +1,254 @@
+{
+  "$defs": {
+    "TicketComment": {
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "author": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Author"
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "author"
+      ],
+      "title": "TicketComment",
+      "type": "object"
+    }
+  },
+  "description": "core -> itsm-adapter (and anyone) (topic mes.tickets.v1, payload of the envelope)",
+  "properties": {
+    "ticket_id": {
+      "format": "uuid",
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "description": {
+      "title": "Description",
+      "type": "string"
+    },
+    "category": {
+      "title": "Category",
+      "type": "string"
+    },
+    "impact": {
+      "title": "Impact",
+      "type": "string"
+    },
+    "severity": {
+      "title": "Severity",
+      "type": "string"
+    },
+    "tier": {
+      "title": "Tier",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "source": {
+      "title": "Source",
+      "type": "string"
+    },
+    "reported_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Reported By"
+    },
+    "reported_at": {
+      "title": "Reported At",
+      "type": "string"
+    },
+    "resolution_note": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Resolution Note"
+    },
+    "response_due_at": {
+      "title": "Response Due At",
+      "type": "string"
+    },
+    "resolution_due_at": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Resolution Due At"
+    },
+    "sn_sys_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sn Sys Id"
+    },
+    "sn_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Sn Number"
+    },
+    "jira_key": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Jira Key"
+    },
+    "line_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Line Code"
+    },
+    "equipment_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Equipment Code"
+    },
+    "erp_order_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Erp Order Number"
+    },
+    "terminal_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Terminal Code"
+    },
+    "changes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Changes",
+      "type": "array"
+    },
+    "origin": {
+      "title": "Origin",
+      "type": "string"
+    },
+    "comment": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/TicketComment"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "ticket_id",
+    "plant_id",
+    "number",
+    "title",
+    "description",
+    "category",
+    "impact",
+    "severity",
+    "tier",
+    "status",
+    "source",
+    "reported_by",
+    "reported_at",
+    "resolution_note",
+    "response_due_at",
+    "resolution_due_at",
+    "sn_sys_id",
+    "sn_number",
+    "jira_key",
+    "line_code",
+    "equipment_code",
+    "erp_order_number",
+    "terminal_code",
+    "changes",
+    "origin",
+    "comment"
+  ],
+  "title": "TicketEvent",
+  "type": "object",
+  "$id": "urn:mes:events:mes.ticket.updated.v1"
+}

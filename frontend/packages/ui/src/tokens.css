@@ -1,0 +1,52 @@
+/* Shared design tokens for every MES UI (admin + terminal). */
+:root {
+  --mes-bg: #121518;
+  --mes-panel: #181c20;
+  --mes-panel-2: #1e2328;
+  --mes-line: #2a3037;
+  --mes-line-strong: #3a424b;
+  --mes-text-dim: #8b939d;
+  --mes-amber: #f2a900;
+  --mes-red: #e5484d;
+  --mes-green: #3dbb7b;
+  --mes-blue: #4c9aff;
+  --mes-cyan: #3ac6c6;
+}
+
+html,
+body {
+  background: var(--mes-bg);
+}
+
+body {
+  /* faint engineering grid: reads as "plant drawing", disappears under content */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.018) 1px, transparent 1px);
+  background-size: 32px 32px;
+  font-feature-settings: "tnum" 1;
+}
+
+.mono {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  letter-spacing: -0.01em;
+}
+
+td.mono {
+  white-space: nowrap;
+}
+
+.label {
+  font-family: "Barlow Condensed", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--mes-text-dim);
+  font-weight: 600;
+}
+
+.panel {
+  background: var(--mes-panel);
+  border: 1px solid var(--mes-line);
+}

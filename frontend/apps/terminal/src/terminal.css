@@ -1,0 +1,428 @@
+/* Operator terminal: shared tokens, bigger everything. Designed for a 10-13" landscape touch panel,
+   gloved fingers, glare and viewing from a step away. Minimum touch target 64 px. */
+
+html,
+body {
+  background: var(--mes-bg);
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.t-shell {
+  display: grid;
+  grid-template-rows: 68px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.t-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 0 18px;
+  background: #0d1012;
+  border-bottom: 1px solid var(--mes-line);
+}
+
+.t-main {
+  overflow: auto;
+  padding: 16px 18px 24px;
+}
+
+.t-title {
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+}
+
+.t-big {
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.t-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--mes-line-strong);
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 15px;
+}
+.t-pill.online {
+  color: var(--mes-green);
+  border-color: rgba(61, 187, 123, 0.5);
+}
+.t-pill.offline {
+  color: #111;
+  background: var(--mes-amber);
+  border-color: var(--mes-amber);
+}
+
+/* action buttons */
+.t-btn {
+  min-height: 84px;
+  width: 100%;
+  border: 2px solid var(--mes-line-strong);
+  background: var(--mes-panel-2);
+  color: #e9edf1;
+  font-family: "Barlow Condensed", sans-serif;
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: transform 60ms, background 120ms;
+}
+.t-btn:active {
+  transform: scale(0.98);
+}
+.t-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.t-btn.primary {
+  background: #1d5b3c;
+  border-color: var(--mes-green);
+}
+.t-btn.warn {
+  background: #5c4406;
+  border-color: var(--mes-amber);
+}
+.t-btn.danger {
+  background: #4d1f22;
+  border-color: var(--mes-red);
+}
+.t-btn.ghost {
+  background: transparent;
+}
+.t-btn.small {
+  min-height: 64px;
+  font-size: 20px;
+}
+
+/* state banner on the operation screen */
+.t-state {
+  padding: 14px 18px;
+  border: 2px solid var(--mes-line-strong);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.t-state[data-state="RUNNING"] {
+  border-color: var(--mes-green);
+  background: linear-gradient(90deg, rgba(61, 187, 123, 0.16), transparent 70%);
+}
+.t-state[data-state="SETUP"] {
+  border-color: var(--mes-cyan);
+  background: linear-gradient(90deg, rgba(58, 198, 198, 0.14), transparent 70%);
+}
+.t-state[data-state="PAUSED"] {
+  border-color: var(--mes-amber);
+  background: repeating-linear-gradient(-45deg, rgba(242, 169, 0, 0.18) 0 14px, rgba(242, 169, 0, 0.06) 14px 28px);
+}
+
+/* work queue cards */
+.t-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 14px 16px;
+  background: var(--mes-panel);
+  border: 1px solid var(--mes-line);
+  border-left: 6px solid var(--mes-line-strong);
+  cursor: pointer;
+  min-height: 92px;
+}
+.t-card:active {
+  background: var(--mes-panel-2);
+}
+.t-card[data-state="RUNNING"] {
+  border-left-color: var(--mes-green);
+}
+.t-card[data-state="SETUP"] {
+  border-left-color: var(--mes-cyan);
+}
+.t-card[data-state="PAUSED"] {
+  border-left-color: var(--mes-amber);
+}
+
+.t-machine {
+  padding: 10px 12px;
+  border: 1px solid var(--mes-line);
+  background: var(--mes-panel);
+  border-top: 4px solid var(--mes-line-strong);
+  min-width: 150px;
+}
+.t-machine[data-state="RUNNING"] {
+  border-top-color: var(--mes-green);
+}
+.t-machine[data-state="SETUP"] {
+  border-top-color: var(--mes-cyan);
+}
+.t-machine[data-state="PAUSED"] {
+  border-top-color: var(--mes-amber);
+}
+
+/* keypad */
+.t-keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.t-key {
+  height: 76px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 32px;
+  font-weight: 500;
+  background: var(--mes-panel-2);
+  color: #fff;
+  border: 1px solid var(--mes-line-strong);
+  cursor: pointer;
+}
+.t-key:active {
+  background: #2b3137;
+}
+.t-display {
+  height: 76px;
+  border: 2px solid var(--mes-line-strong);
+  background: #0c0e10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 18px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 40px;
+}
+.t-display.focused {
+  border-color: var(--mes-amber);
+}
+
+.t-choice {
+  min-height: 72px;
+  padding: 10px 14px;
+  border: 2px solid var(--mes-line-strong);
+  background: var(--mes-panel-2);
+  color: #e9edf1;
+  font-size: 19px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+.t-choice.selected {
+  border-color: var(--mes-amber);
+  background: rgba(242, 169, 0, 0.14);
+}
+
+@keyframes t-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.t-blink {
+  animation: t-blink 1.2s ease-in-out infinite;
+}
+
+/* quality: hold banner and first-off inspection strip */
+.t-hold {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 18px;
+  color: #fff;
+  border: 2px solid var(--mes-red);
+  background: repeating-linear-gradient(-45deg, rgba(229, 72, 77, 0.28) 0 14px, rgba(229, 72, 77, 0.1) 14px 28px);
+}
+.t-insp {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 16px;
+  border: 2px solid var(--mes-line-strong);
+  border-left-width: 8px;
+}
+.t-insp[data-status="OPEN"] {
+  border-color: var(--mes-cyan);
+  background: rgba(58, 198, 198, 0.08);
+}
+.t-insp[data-status="FAILED"] {
+  border-color: var(--mes-red);
+  background: rgba(229, 72, 77, 0.1);
+}
+.t-insp[data-status="PASSED"] {
+  border-color: var(--mes-green);
+}
+
+/* phase 4: machine availability, help, sign-off */
+.t-machine[data-state="DOWN"],
+.t-machine[data-state="MAINTENANCE"] {
+  border-top-color: var(--mes-red);
+  background: repeating-linear-gradient(-45deg, rgba(229, 72, 77, 0.16) 0 10px, transparent 10px 20px);
+}
+.t-card[data-state="DOWN"] {
+  border-left-color: var(--mes-red);
+}
+.help-choice {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: flex-start;
+}
+.t-sign {
+  border: 2px solid var(--mes-amber);
+  background: rgba(242, 169, 0, 0.08);
+  padding: 14px 16px;
+}
+
+/* support assistant chat (Get help) */
+.t-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: min(74vh, 820px);
+}
+.t-chat-log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px 4px 8px;
+}
+.t-bubble {
+  max-width: 78%;
+  padding: 14px 18px;
+  font-size: 22px;
+  line-height: 1.35;
+  border: 2px solid var(--mes-line-strong);
+  background: var(--mes-panel-2);
+}
+.t-bubble.assistant {
+  align-self: flex-start;
+  border-left: 4px solid var(--mes-cyan);
+}
+.t-bubble.operator {
+  align-self: flex-end;
+  background: var(--mes-panel);
+}
+.t-bubble-icon {
+  color: var(--mes-cyan);
+  margin-bottom: 4px;
+}
+.t-bubble-ticket {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  color: var(--mes-cyan);
+}
+.t-chat-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--mes-cyan);
+  font-size: 18px;
+  margin-top: 6px;
+}
+.t-chat-choices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.t-chat-choices .t-choice {
+  min-height: 72px;
+  font-size: 22px;
+  text-align: center;
+}
+.t-chat-input {
+  display: flex;
+  gap: 10px;
+}
+.t-chat-text {
+  flex: 1;
+  min-height: 64px;
+  padding: 0 16px;
+  font-size: 22px;
+  color: #e9edf1;
+  background: var(--mes-panel);
+  border: 2px solid var(--mes-line-strong);
+}
+.t-chat-text:focus {
+  outline: none;
+  border-color: var(--mes-amber);
+}
+.t-chat-closed {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  font-size: 22px;
+  border: 2px solid var(--mes-line-strong);
+  background: var(--mes-panel);
+}
+.t-chat-closed span {
+  flex: 1;
+}
+.t-chat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 48px;
+  text-align: center;
+}
+.t-btn.on {
+  border-color: var(--mes-amber);
+}
+
+/* on-screen keyboard for the chat (gloves: big keys) */
+.t-kbd {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.t-kbd-row {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+}
+.t-kbd-key {
+  flex: 1;
+  max-width: 88px;
+  min-height: 64px;
+  font-size: 24px;
+  color: #e9edf1;
+  background: var(--mes-panel-2);
+  border: 2px solid var(--mes-line-strong);
+  cursor: pointer;
+}
+.t-kbd-key:active {
+  background: var(--mes-line-strong);
+}
+.t-kbd-key.wide {
+  max-width: 140px;
+}
+.t-kbd-key.space {
+  max-width: 480px;
+  flex: 4;
+}
+.t-kbd-key.on {
+  border-color: var(--mes-amber);
+}
+.help-choice.assistant {
+  border-color: var(--mes-cyan);
+}

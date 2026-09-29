@@ -1,0 +1,42 @@
+{
+  "properties": {
+    "ticket_id": {
+      "format": "uuid",
+      "title": "Ticket Id",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "severity": {
+      "title": "Severity",
+      "type": "string"
+    },
+    "tier": {
+      "title": "Tier",
+      "type": "string"
+    },
+    "which": {
+      "title": "Which",
+      "type": "string"
+    },
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "ticket_id",
+    "number",
+    "severity",
+    "tier",
+    "which",
+    "plant_id"
+  ],
+  "title": "TicketSlaBreached",
+  "type": "object",
+  "$id": "urn:mes:events:mes.ticket.sla_breached.v1",
+  "description": "core -> anyone (phase 6 notifications) (topic mes.tickets.v1, payload of the envelope)"
+}

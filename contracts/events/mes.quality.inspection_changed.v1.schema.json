@@ -1,0 +1,82 @@
+{
+  "properties": {
+    "plant_id": {
+      "format": "uuid",
+      "title": "Plant Id",
+      "type": "string"
+    },
+    "inspection_lot_id": {
+      "format": "uuid",
+      "title": "Inspection Lot Id",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "inspection_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Inspection Type"
+    },
+    "usage_decision": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Usage Decision"
+    },
+    "work_order_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Work Order Id"
+    },
+    "operation_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Operation Id"
+    }
+  },
+  "required": [
+    "plant_id",
+    "inspection_lot_id",
+    "number",
+    "status"
+  ],
+  "title": "InspectionChanged",
+  "type": "object",
+  "$id": "urn:mes:events:mes.quality.inspection_changed.v1",
+  "description": "core -> anyone (alerts, analytics) (topic mes.quality.v1, payload of the envelope)"
+}

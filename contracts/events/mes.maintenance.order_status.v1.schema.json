@@ -1,0 +1,65 @@
+{
+  "properties": {
+    "message_id": {
+      "format": "uuid",
+      "title": "Message Id",
+      "type": "string"
+    },
+    "order_id": {
+      "format": "uuid",
+      "title": "Order Id",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "labor_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Labor Min"
+    },
+    "findings": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Findings"
+    }
+  },
+  "required": [
+    "message_id",
+    "order_id",
+    "erp_plant",
+    "number",
+    "status"
+  ],
+  "title": "MaintOrderStatusCommand",
+  "type": "object",
+  "$id": "urn:mes:events:mes.maintenance.order_status.v1",
+  "description": "core -> erp-adapter: PM order REL / TECO (topic mes.maintenance.v1, payload of the envelope)"
+}

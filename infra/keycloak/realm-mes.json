@@ -1,0 +1,299 @@
+{
+  "realm": "mes",
+  "displayName": "MES Demo",
+  "enabled": true,
+  "sslRequired": "none",
+  "loginWithEmailAllowed": true,
+  "accessTokenLifespan": 900,
+  "ssoSessionIdleTimeout": 28800,
+  "roles": {
+    "realm": [
+      {
+        "name": "operator",
+        "description": "Shop-floor operator"
+      },
+      {
+        "name": "supervisor",
+        "description": "Production supervisor / planner"
+      },
+      {
+        "name": "quality_engineer",
+        "description": "Quality engineer"
+      },
+      {
+        "name": "maintenance_tech",
+        "description": "Maintenance technician"
+      },
+      {
+        "name": "admin",
+        "description": "MES administrator (all plants)"
+      },
+      {
+        "name": "ai_agent",
+        "description": "AI agent via the MES MCP server: read, raise and triage support tickets"
+      },
+      {
+        "name": "ai_support_agent",
+        "description": "AI support agent (support-agent service account)"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "mes-admin",
+      "name": "MES admin / planning UI",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3080/*",
+        "http://localhost:5173/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3080",
+        "http://localhost:5173"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://localhost:3080/*##http://localhost:5173/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "mes-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mes-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "mes-terminal",
+      "name": "MES operator terminal (Phase 2)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "redirectUris": [
+        "http://localhost:3001/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3001"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "mes-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mes-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "mes-cli",
+      "name": "Demo/test scripts (password grant, local demo only)",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "mes-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mes-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "mes-mcp",
+      "name": "MES MCP server (service account for AI agents)",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "mes-mcp-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "mes-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mes-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "mes-support-agent",
+      "name": "MES AI support agent (service account)",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "mes-support-agent-secret",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "mes-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "mes-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "operator1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Olga",
+      "lastName": "Operator",
+      "email": "operator1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "operator"
+      ]
+    },
+    {
+      "username": "supervisor1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Sam",
+      "lastName": "Supervisor",
+      "email": "supervisor1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "supervisor"
+      ]
+    },
+    {
+      "username": "support1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Sid",
+      "lastName": "Support",
+      "email": "support1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "supervisor"
+      ]
+    },
+    {
+      "username": "quality1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Quinn",
+      "lastName": "Quality",
+      "email": "quality1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "quality_engineer"
+      ]
+    },
+    {
+      "username": "maint1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Max",
+      "lastName": "Maintenance",
+      "email": "maint1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "maintenance_tech"
+      ]
+    },
+    {
+      "username": "admin1",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Ada",
+      "lastName": "Admin",
+      "email": "admin1@mes.local",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "demo",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    },
+    {
+      "username": "service-account-mes-mcp",
+      "enabled": true,
+      "serviceAccountClientId": "mes-mcp",
+      "firstName": "MES MCP",
+      "lastName": "agent",
+      "realmRoles": [
+        "ai_agent"
+      ]
+    },
+    {
+      "username": "service-account-mes-support-agent",
+      "enabled": true,
+      "serviceAccountClientId": "mes-support-agent",
+      "firstName": "AI Support",
+      "lastName": "Agent",
+      "realmRoles": [
+        "ai_support_agent"
+      ]
+    }
+  ]
+}

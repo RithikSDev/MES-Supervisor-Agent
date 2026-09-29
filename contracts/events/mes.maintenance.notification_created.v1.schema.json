@@ -1,0 +1,74 @@
+{
+  "properties": {
+    "notification_id": {
+      "format": "uuid",
+      "title": "Notification Id",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "notif_type": {
+      "title": "Notif Type",
+      "type": "string"
+    },
+    "priority": {
+      "title": "Priority",
+      "type": "string"
+    },
+    "text": {
+      "title": "Text",
+      "type": "string"
+    },
+    "long_text": {
+      "default": "",
+      "title": "Long Text",
+      "type": "string"
+    },
+    "equipment": {
+      "title": "Equipment",
+      "type": "string"
+    },
+    "breakdown": {
+      "default": false,
+      "title": "Breakdown",
+      "type": "boolean"
+    },
+    "malfunction_start": {
+      "format": "date-time",
+      "title": "Malfunction Start",
+      "type": "string"
+    },
+    "reported_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reported By"
+    }
+  },
+  "required": [
+    "notification_id",
+    "erp_plant",
+    "number",
+    "notif_type",
+    "priority",
+    "text",
+    "equipment",
+    "malfunction_start"
+  ],
+  "title": "MaintNotificationCommand",
+  "type": "object",
+  "$id": "urn:mes:events:mes.maintenance.notification_created.v1",
+  "description": "core -> erp-adapter: SAP PM notification (topic mes.maintenance.v1, payload of the envelope)"
+}

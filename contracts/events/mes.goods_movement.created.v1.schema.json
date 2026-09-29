@@ -1,0 +1,159 @@
+{
+  "properties": {
+    "movement_id": {
+      "format": "uuid",
+      "title": "Movement Id",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "movement_type": {
+      "title": "Movement Type",
+      "type": "string"
+    },
+    "material": {
+      "title": "Material",
+      "type": "string"
+    },
+    "quantity": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Quantity"
+    },
+    "uom": {
+      "title": "Uom",
+      "type": "string"
+    },
+    "storage_location": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Storage Location"
+    },
+    "destination_storage_location": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Destination Storage Location"
+    },
+    "batch": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Batch"
+    },
+    "erp_order_number": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Erp Order Number"
+    },
+    "reservation_no": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reservation No"
+    },
+    "reservation_item": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reservation Item"
+    },
+    "posting_date": {
+      "format": "date",
+      "title": "Posting Date",
+      "type": "string"
+    },
+    "stock_type": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Stock Type"
+    },
+    "serial_numbers": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Serial Numbers",
+      "type": "array"
+    },
+    "reason": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Reason"
+    }
+  },
+  "required": [
+    "movement_id",
+    "erp_plant",
+    "movement_type",
+    "material",
+    "quantity",
+    "uom",
+    "posting_date"
+  ],
+  "title": "GoodsMovementCommand",
+  "type": "object",
+  "$id": "urn:mes:events:mes.goods_movement.created.v1",
+  "description": "core -> erp-adapter: post to SAP (topic mes.goods-movements.v1, payload of the envelope)"
+}

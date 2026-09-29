@@ -1,0 +1,67 @@
+{
+  "properties": {
+    "movement_id": {
+      "format": "uuid",
+      "title": "Movement Id",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "erp_material_document": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Erp Material Document"
+    },
+    "erp_document_year": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Erp Document Year"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Error"
+    },
+    "attempts": {
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "reconciled": {
+      "title": "Reconciled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "movement_id",
+    "status",
+    "erp_material_document",
+    "erp_document_year",
+    "error",
+    "attempts",
+    "reconciled"
+  ],
+  "title": "GoodsMovementResult",
+  "type": "object",
+  "$id": "urn:mes:events:erp.goods_movement.result.v1",
+  "description": "erp-adapter -> core: outcome (topic erp.goods-movement-results.v1, payload of the envelope)"
+}

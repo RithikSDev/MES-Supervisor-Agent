@@ -1,0 +1,131 @@
+{
+  "properties": {
+    "confirmation_id": {
+      "format": "uuid",
+      "title": "Confirmation Id",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "erp_order_number": {
+      "title": "Erp Order Number",
+      "type": "string"
+    },
+    "op_no": {
+      "title": "Op No",
+      "type": "string"
+    },
+    "work_center": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Work Center"
+    },
+    "yield_qty": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Yield Qty"
+    },
+    "scrap_qty": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Scrap Qty"
+    },
+    "rework_qty": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Rework Qty"
+    },
+    "uom": {
+      "title": "Uom",
+      "type": "string"
+    },
+    "setup_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Setup Min"
+    },
+    "run_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Run Min"
+    },
+    "labor_min": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Labor Min"
+    },
+    "final": {
+      "default": false,
+      "title": "Final",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "confirmation_id",
+    "erp_plant",
+    "erp_order_number",
+    "op_no",
+    "yield_qty",
+    "uom"
+  ],
+  "title": "ConfirmationCommand",
+  "type": "object",
+  "$id": "urn:mes:events:mes.confirmation.created.v1",
+  "description": "core -> erp-adapter: post to SAP (topic mes.confirmations.v1, payload of the envelope)"
+}

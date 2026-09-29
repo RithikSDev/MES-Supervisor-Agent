@@ -1,0 +1,67 @@
+{
+  "properties": {
+    "confirmation_id": {
+      "format": "uuid",
+      "title": "Confirmation Id",
+      "type": "string"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "erp_confirmation_group": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Erp Confirmation Group"
+    },
+    "erp_confirmation_count": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Erp Confirmation Count"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Error"
+    },
+    "attempts": {
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "reconciled": {
+      "title": "Reconciled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "confirmation_id",
+    "status",
+    "erp_confirmation_group",
+    "erp_confirmation_count",
+    "error",
+    "attempts",
+    "reconciled"
+  ],
+  "title": "ConfirmationResult",
+  "type": "object",
+  "$id": "urn:mes:events:erp.confirmation.result.v1",
+  "description": "erp-adapter -> core: outcome (topic erp.confirmation-results.v1, payload of the envelope)"
+}

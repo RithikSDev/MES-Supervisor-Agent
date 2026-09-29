@@ -1,0 +1,98 @@
+{
+  "properties": {
+    "message_type": {
+      "title": "Message Type",
+      "type": "string"
+    },
+    "number": {
+      "title": "Number",
+      "type": "string"
+    },
+    "notification_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notification Id"
+    },
+    "order_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Order Id"
+    },
+    "message_id": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Message Id"
+    },
+    "status": {
+      "title": "Status",
+      "type": "string"
+    },
+    "system_status": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "System Status"
+    },
+    "error": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error"
+    },
+    "attempts": {
+      "title": "Attempts",
+      "type": "integer"
+    },
+    "reconciled": {
+      "title": "Reconciled",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "message_type",
+    "number",
+    "status",
+    "attempts",
+    "reconciled"
+  ],
+  "title": "MaintenanceResult",
+  "type": "object",
+  "$id": "urn:mes:events:erp.maintenance.result.v1",
+  "description": "erp-adapter -> core: outcome (topic erp.maintenance-results.v1, payload of the envelope)"
+}

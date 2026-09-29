@@ -1,0 +1,20 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff
+        name: ruff
+        entry: uv run ruff check --fix
+        language: system
+        types: [python]
+      - id: import-boundaries
+        name: import-linter (core module boundaries)
+        entry: bash -c "cd services/core && uv run lint-imports"
+        language: system
+        pass_filenames: false
+        files: ^services/core/src/
+      - id: admin-typecheck
+        name: admin UI typecheck
+        entry: bash -c "cd frontend/apps/admin && npx tsc -b"
+        language: system
+        pass_filenames: false
+        files: ^frontend/apps/admin/src/

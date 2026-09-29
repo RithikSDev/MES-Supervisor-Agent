@@ -1,0 +1,352 @@
+{
+  "$defs": {
+    "CanonicalComponent": {
+      "properties": {
+        "material": {
+          "$ref": "#/$defs/CanonicalMaterial"
+        },
+        "op_no": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Op No"
+        },
+        "required_qty": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Required Qty"
+        },
+        "uom": {
+          "title": "Uom",
+          "type": "string"
+        },
+        "reservation_no": {
+          "title": "Reservation No",
+          "type": "string"
+        },
+        "reservation_item": {
+          "title": "Reservation Item",
+          "type": "string"
+        },
+        "storage_location": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Storage Location"
+        },
+        "backflush": {
+          "default": false,
+          "title": "Backflush",
+          "type": "boolean"
+        },
+        "withdrawn_qty": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "default": "0",
+          "title": "Withdrawn Qty"
+        }
+      },
+      "required": [
+        "material",
+        "op_no",
+        "required_qty",
+        "uom",
+        "reservation_no",
+        "reservation_item"
+      ],
+      "title": "CanonicalComponent",
+      "type": "object"
+    },
+    "CanonicalMaterial": {
+      "properties": {
+        "number": {
+          "title": "Number",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "base_uom": {
+          "title": "Base Uom",
+          "type": "string"
+        },
+        "material_type": {
+          "title": "Material Type",
+          "type": "string"
+        },
+        "serial_profile": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Serial Profile"
+        }
+      },
+      "required": [
+        "number",
+        "description",
+        "base_uom",
+        "material_type"
+      ],
+      "title": "CanonicalMaterial",
+      "type": "object"
+    },
+    "CanonicalOperation": {
+      "properties": {
+        "op_no": {
+          "title": "Op No",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "work_center": {
+          "title": "Work Center",
+          "type": "string"
+        },
+        "control_key": {
+          "title": "Control Key",
+          "type": "string"
+        },
+        "planned_qty": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Planned Qty"
+        },
+        "uom": {
+          "title": "Uom",
+          "type": "string"
+        },
+        "setup_min": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Setup Min"
+        },
+        "run_min_per_unit": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Run Min Per Unit"
+        },
+        "labor_min_per_unit": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Labor Min Per Unit"
+        },
+        "erp_routing_no": {
+          "title": "Erp Routing No",
+          "type": "string"
+        },
+        "erp_routing_counter": {
+          "title": "Erp Routing Counter",
+          "type": "string"
+        },
+        "erp_confirmed_yield": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "default": "0",
+          "title": "Erp Confirmed Yield"
+        },
+        "erp_confirmed_scrap": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "default": "0",
+          "title": "Erp Confirmed Scrap"
+        },
+        "erp_final_confirmed": {
+          "default": false,
+          "title": "Erp Final Confirmed",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "op_no",
+        "description",
+        "work_center",
+        "control_key",
+        "planned_qty",
+        "uom",
+        "setup_min",
+        "run_min_per_unit",
+        "labor_min_per_unit",
+        "erp_routing_no",
+        "erp_routing_counter"
+      ],
+      "title": "CanonicalOperation",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "erp_order_number": {
+      "title": "Erp Order Number",
+      "type": "string"
+    },
+    "erp_plant": {
+      "title": "Erp Plant",
+      "type": "string"
+    },
+    "order_type": {
+      "title": "Order Type",
+      "type": "string"
+    },
+    "material": {
+      "$ref": "#/$defs/CanonicalMaterial"
+    },
+    "planned_qty": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Planned Qty"
+    },
+    "uom": {
+      "title": "Uom",
+      "type": "string"
+    },
+    "basic_start": {
+      "format": "date",
+      "title": "Basic Start",
+      "type": "string"
+    },
+    "basic_end": {
+      "format": "date",
+      "title": "Basic End",
+      "type": "string"
+    },
+    "erp_status": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Erp Status",
+      "type": "array"
+    },
+    "erp_last_changed_at": {
+      "format": "date-time",
+      "title": "Erp Last Changed At",
+      "type": "string"
+    },
+    "delivered_qty": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Delivered Qty"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/CanonicalOperation"
+      },
+      "title": "Operations",
+      "type": "array"
+    },
+    "components": {
+      "items": {
+        "$ref": "#/$defs/CanonicalComponent"
+      },
+      "title": "Components",
+      "type": "array"
+    }
+  },
+  "required": [
+    "erp_order_number",
+    "erp_plant",
+    "order_type",
+    "material",
+    "planned_qty",
+    "uom",
+    "basic_start",
+    "basic_end",
+    "erp_status",
+    "erp_last_changed_at",
+    "operations",
+    "components"
+  ],
+  "title": "CanonicalWorkOrder",
+  "type": "object",
+  "$id": "urn:mes:events:erp.work_order.upserted.v1",
+  "description": "erp-adapter -> core: full order snapshot (topic erp.work-orders.v1, payload of the envelope)"
+}

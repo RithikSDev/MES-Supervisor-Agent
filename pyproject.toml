@@ -1,0 +1,58 @@
+[project]
+name = "mes-workspace"
+version = "0.1.0"
+requires-python = ">=3.14"
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = [
+    "libs/mes-common",
+    "services/core",
+    "services/erp-adapter",
+    "services/mock-sap",
+    "services/mock-itsm",
+    "services/itsm-adapter",
+    "services/support-agent",
+    "services/notifier",
+    "services/mes-mcp",
+    "services/data-mcp",
+]
+
+[tool.uv.sources]
+mes-common = { workspace = true }
+mock-sap = { workspace = true }
+mock-itsm = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.25",
+    "testcontainers[postgres]>=4.9",
+    "ruff>=0.8",
+    "mypy>=1.13",
+    "import-linter>=2.1",
+    "pre-commit>=4.0",
+]
+
+[tool.ruff]
+line-length = 110
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "SIM"]
+ignore = ["B008", "E501"]  # Depends() in defaults; line length is the formatter's job
+
+[tool.ruff.lint.isort]
+known-first-party = ["mes_common", "mes_core", "erp_adapter", "mock_sap", "mock_itsm", "itsm_adapter", "mes_mcp", "support_agent", "notifier", "tests"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = ["db: needs Docker (testcontainers Postgres)"]
+
+[tool.mypy]
+python_version = "3.14"
+ignore_missing_imports = true
