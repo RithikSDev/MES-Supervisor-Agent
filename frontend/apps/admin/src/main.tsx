@@ -1,9 +1,8 @@
 import "@mes/ui/src/fonts";
-import "@fontsource/big-shoulders-display/500";
-import "@fontsource/big-shoulders-display/600";
-import "@fontsource/big-shoulders-display/700";
-import "@fontsource/big-shoulders-display/800";
-import "@fontsource/big-shoulders-display/900";
+import "@fontsource/geist-sans/400";
+import "@fontsource/geist-sans/500";
+import "@fontsource/geist-sans/600";
+import "@fontsource/geist-sans/700";
 import "@mantine/core/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/charts/styles.css";

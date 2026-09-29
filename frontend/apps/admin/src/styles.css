@@ -17,8 +17,9 @@
   --mes-blue-soft: #e3f5f2;
   --mes-cyan: #6355d6;
   --mes-navy: #0e1f1d;
-  --mes-serif: "Big Shoulders Display", "Arial Narrow", sans-serif;
+  --mes-serif: "Geist Sans", "IBM Plex Sans", sans-serif;
   --mes-read: "IBM Plex Sans", sans-serif;
+  --mes-ease: cubic-bezier(0.2, 0.7, 0.3, 1);
 }
 
 html,
@@ -27,12 +28,18 @@ body {
   color: var(--mes-text);
 }
 
-body {
-  /* faint drafting grid */
-  background-image:
-    linear-gradient(rgba(15, 138, 125, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 138, 125, 0.035) 1px, transparent 1px);
-  background-size: 40px 40px;
+a, button, .panel, .kpi, .wo-kpi, .module-card, .sidebar-link, .sidebar-group-label,
+.pill, .chip, .badge, [class*="mantine-Button"], [class*="mantine-ActionIcon"] {
+  transition: background-color 140ms var(--mes-ease), border-color 140ms var(--mes-ease),
+    color 140ms var(--mes-ease), box-shadow 140ms var(--mes-ease), transform 140ms var(--mes-ease),
+    opacity 140ms var(--mes-ease);
+}
+button:active, .pill:active, a.module-card:active, [class*="mantine-Button-root"]:active {
+  transform: scale(0.98);
+}
+:focus-visible {
+  outline: 2px solid var(--mes-blue);
+  outline-offset: 2px;
 }
 
 .label {
@@ -104,10 +111,9 @@ body {
 }
 .sidebar-brand-name {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  font-size: 1.3rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
   color: var(--mes-navy);
 }
 .sidebar-scroll {
@@ -263,10 +269,9 @@ body {
 }
 .brand-name {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  font-size: 1.6rem;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-weight: 600;
+  font-size: 1.3rem;
+  letter-spacing: -0.01em;
   color: var(--mes-navy);
   line-height: 1;
 }
@@ -379,11 +384,10 @@ body {
 }
 .display {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  text-transform: uppercase;
+  font-weight: 600;
   color: var(--mes-navy);
-  line-height: 0.95;
-  letter-spacing: 0.005em;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
   margin: 0;
 }
 .display em,
@@ -552,11 +556,11 @@ body {
 }
 .module-card .title {
   font-family: var(--mes-serif);
-  font-size: 1.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--mes-navy);
-  line-height: 1.05;
+  line-height: 1.15;
   margin-top: auto;
   padding-top: 40px;
 }
@@ -579,11 +583,10 @@ body {
 /* ------------------------------------------------------------------ page elements */
 .page-title {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 2.1rem;
-  letter-spacing: 0.005em;
-  line-height: 1.05;
+  font-weight: 600;
+  font-size: 1.7rem;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
   color: var(--mes-navy);
 }
 .page-title em {
@@ -655,9 +658,10 @@ body {
 }
 .kpi .value {
   font-family: var(--mes-serif);
-  font-size: 2.2rem;
+  font-size: 2rem;
   line-height: 1;
-  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-weight: 700;
   color: var(--mes-navy);
 }
 
@@ -922,8 +926,9 @@ body {
 }
 .stat-chip-value {
   font-family: var(--mes-serif);
-  font-weight: 800;
-  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-size: 1.2rem;
   line-height: 1;
   color: var(--mes-navy);
 }
@@ -1053,10 +1058,9 @@ body {
 }
 .chat-card-title {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 0.98rem;
   color: var(--mes-navy);
 }
 .chat-card-icon {
@@ -1088,10 +1092,11 @@ body {
 }
 .chat-tile-value {
   font-family: var(--mes-serif);
-  font-size: 1.6rem;
-  font-weight: 800;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   color: var(--mes-navy);
-  line-height: 1.05;
+  line-height: 1.1;
 }
 .chart-tip {
   background: #fff;
@@ -1155,9 +1160,9 @@ body {
   gap: 10px;
   text-decoration: none;
   font-family: var(--mes-serif);
-  font-weight: 700;
-  text-transform: uppercase;
-  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 1.05rem;
   color: var(--mes-navy);
   white-space: nowrap;
 }
@@ -1231,10 +1236,9 @@ body {
 }
 .assistant-title {
   font-family: var(--mes-serif);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 1.02rem;
   color: var(--mes-navy);
 }
 .assistant-scroll {

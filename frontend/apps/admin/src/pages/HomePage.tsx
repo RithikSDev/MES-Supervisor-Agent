@@ -57,7 +57,7 @@ export function HomePage() {
       <Group align="flex-start" justify="space-between" gap={48} wrap="wrap" mb={64}>
         <div style={{ flex: "1 1 520px", maxWidth: 820 }}>
           <div className="eyebrow">Control room · {today}</div>
-          <h1 className="display" style={{ fontSize: "clamp(2.6rem, 5vw, 4.4rem)", marginTop: 26 }}>
+          <h1 className="display" style={{ fontSize: "clamp(2.1rem, 3.6vw, 3rem)", marginTop: 26 }}>
             Good shift, <em>{first}.</em>
           </h1>
           <p className="lede" style={{ marginTop: 22 }}>
@@ -91,7 +91,7 @@ export function HomePage() {
       </Group>
 
       <Group gap={18} align="baseline" mb={22}>
-        <h2 className="display" style={{ fontSize: "1.9rem", fontWeight: 700 }}>Pick a <em>lane</em></h2>
+        <h2 className="display" style={{ fontSize: "1.5rem" }}>Pick a <em>lane</em></h2>
         <span className="label" style={{ letterSpacing: "0.3em" }}>{modules.length} modules</span>
       </Group>
 
